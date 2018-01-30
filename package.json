@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jason-crow/porter#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
     "gulp-transform": "^3.0.5"
   }
 }
