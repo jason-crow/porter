@@ -176,7 +176,6 @@ export namespace GLES {}
   }
   export class PolylineGeometryCreateParams extends IndexedGeometryCreateParams {
     ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    cb: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     cc: ColorTable:
     cd: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ce: LineCode;
@@ -197,7 +196,6 @@ export namespace GLES {}
   }
   export class EdgeGeometryCreateParams extends IndexedGeometryCreateParams {
     ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    cb: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     cc: ColorTable;
     cd: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ce: LineCode;
@@ -212,7 +210,6 @@ export namespace GLES {}
   export class SilhouetteEdgeGeometryCreateParams extends EdgeGeometryCreateParams {
     da: OctEncodedNormalPairList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     db: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    dc: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     dd: ColorTable;
     de: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     df: LinePixels;
@@ -239,7 +236,6 @@ export namespace GLES {}
     be: RenderOrder;
   }
   export class PointCloudGeometryCreateParams extends CachedGeometryCreateParams {
-    ba: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     bb: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class ViewportQuadGeometry extends IndexedGeometry {
@@ -283,9 +279,6 @@ export namespace GLES {}
     bd: ShaderProgramParams;
     be: Transform;
   }
-  export class PrimitiveCounts {
-    a: RenderOrder;
-  }
   export const enum PushOrPop { Push, Pop }
   export const enum OpCode { DrawBatchPrimitive, DrawOvrPrimitive, PushBranch, PopBranch }
   export class BatchPrimitive {
@@ -312,9 +305,7 @@ export namespace GLES {}
   }
   export class DrawCommands {
     a: DrawCommand;
-    b: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     c: assert; // was BeAssert;
-    d: PrimitiveCounts;
   }
   export class RenderCommands {
     a: Target;
@@ -334,14 +325,7 @@ export namespace GLES {}
     q: Primitive;
     r: Render.Decorations; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     u: RenderCommands;
-    v: PrimitiveCounts;
     w: CompositeFlags;
-  }
-  // EAGLDisplayContext
-  export class EAGLDisplayContext {}
-  export class EAGLDisplaySurface {
-    a: EAGLDisplayContext;
-    b: GLuint;
   }
   // EGLDisplayContext
   export class EGLPlatformParameters {
@@ -364,7 +348,6 @@ export namespace GLES {}
   // FrameBuffer
   export const enum BindState { Unbound, Bound, BoundWithAttachments, Suspended }
   export class FrameBuffer {
-    a: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     c: GLESTexture;
     d: GLuint;
     e: BindState;
@@ -378,7 +361,6 @@ export namespace GLES {}
   // Graphic
   export class ColorTable {
     a: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    b: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     c: ColorDef;
     d: LUTDimension;
     e: GLESTexture;
@@ -429,7 +411,6 @@ export namespace GLES {}
   export class GLESBatch extends GLESGraphic {
     aa: Graphic;
     ab: FeatureTable; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    ac: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     ad: PickTable;
     ae: RenderCommands;
     af: Target;
@@ -451,7 +432,6 @@ export namespace GLES {}
     ak: ShaderProgramExecutor;
   }
   export class WorldDecorations extends GLESBranch {
-    ba: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     bc: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
     be: ViewFlags;
@@ -459,7 +439,6 @@ export namespace GLES {}
     bg: GLESBranch;
   }
   export class GLESList extends GLESGraphic {
-    aa: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     ab: Graphic;
     ac: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
     ad: RenderCommands;
@@ -481,7 +460,6 @@ export namespace GLES {}
     ah: ShaderProgramExecutor;
   }
 export class Features {
-    a: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     b: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class IndexedPrimitiveParams extends PrimitiveParams {
@@ -527,7 +505,6 @@ export class Features {
     bc: IndexedPolylineArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: CachedGeometry;
     be: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    bf: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     bg: QPoint3d; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bh: PolyLineVertex;
     bi: FPoint3d; //GeomLibs/PublicAPI/Geom/FPoint3d.h
@@ -537,7 +514,6 @@ export class Features {
     db: PolylineParams;
   }
   export class EdgeParams extends IndexedPrimitiveParams {
-    bb: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     bc: LinePixels;
     bd: ColorIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     be: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -567,7 +543,6 @@ export class Features {
     db: IndexedPolylineArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class PointCloudParams extends PrimitiveParams {
-    aa: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     ab: PointCloudArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class PointCloudPrimitive extends Primitive {
@@ -609,7 +584,6 @@ export class Features {
     b: GLESTexture;
     c: FrameBuffer;
     e: CachedGeometry;
-    f: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     g: Target;
     h: RenderCommands;
     i: RenderPass;
@@ -678,7 +652,6 @@ export class Features {
     e: assert; // was BeAssert;
   }
   export class ShaderVariables {
-    a: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     b: ShaderVariable;
     c: ShaderVariableCR;
     d: T_AddVariableBinding;
@@ -796,7 +769,6 @@ export class Features {
     c: DrawParams;
     d: AttributeHandle; // ./Handle.ts
     e: assert; // was BeAssert;
-    f: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     g: ShaderBinding;
     h: GraphicBinding;
   }
@@ -868,7 +840,7 @@ export class Features {
     l: Render.Target;
     m: Render.Texture;
     n: Render.Material;
-    o: Render.GraphicalBuilder;
+    o: Render.GraphicBuilder;
     p: Render.Graphic;
     q: Graphic;
     e: Light;
@@ -887,7 +859,6 @@ export class Features {
     af: MeshEdgeArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ag: TriMeshArgs;
     ai: SilhouetteEdgeArgs;
-    aj: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     ak: lighting;
     al: DisplayContext;
     am: Techniques;
@@ -927,9 +898,6 @@ export class Features {
     a: Target;
     b: Vector3d;
   }
-  export class RenderScope {
-    a: GLES.Target;
-  }
   export class Target extends Render.Target {
     a: System;
     b: Render.TileSizeAdjuster;
@@ -957,7 +925,6 @@ export class Features {
     aa: WorldDecorations;
     ab: EdgeOverrides;
     ac: Vector3d;
-    ad: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     ae: GLES.Texture;
     ef: Image;
     eg: IPixelDataBuffer;
@@ -969,7 +936,6 @@ export class Features {
     am: GraphicList;
     an: ClipVector;
     ao: Point2d;
-    ap: WChar;
     aq: SceneLights;
     ar: Render.Device;
     as: Techniques;
@@ -1073,7 +1039,6 @@ export class Features {
     d: ShaderSource;
   }
   export class Techniques {
-    a: bvector; // Bentley/PublicAPI/Bentley/bvector.h
     b: Technique;
     c: TechniqueId;
     d: Target;
