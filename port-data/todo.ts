@@ -28,6 +28,7 @@ import { CompileStatus } from "./ShaderProgram";
 import { FeatureSymbologyOptions } from "./ShaderSource";
 import { ContextState } from "./System";
 import { FrustumUniformType, FrustumUniformPlane } from "./Target"
+import { TextureFlags, GLESTextureInternalFormat, GLESTextureFormat, GLESTextureDataType } from "./Texture"
 
 export namespace GLES {}
   // CACHED GEOMETRY
@@ -1095,14 +1096,14 @@ export class Features {
     i: ImageUpdater;
   }
   export class ImageTexture extends GLESTexture {
-    a: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    b: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    c: IsTranslucent;
+    aa: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ab: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ac: IsTranslucent;
   }
   export class ColorTexture extends GLESTexture {
-    b: GLESTextureInternalFormat;
-    c: GLESTextureDataType;
-    d: IsTranslucent;
+    ab: GLESTextureInternalFormat;
+    ac: GLESTextureDataType;
+    ad: IsTranslucent;
   }
   export class Texture extends Render.Texture {
     a: ImageTexture;
