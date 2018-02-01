@@ -20,6 +20,14 @@ import { RenderStateFlags, RenderStateBlend, RenderState } from "./RenderState";
 import { Mode, WithClipVolume, TechniqueFlags } from "./TechniqueFlags";
 import { BuiltInTechniqueId, TechniqueId } from "./TechniqueId";
 import { Handle, BufferHandle } from "./Handle";
+import { PushOrPop, OpCode } from "./DrawCommand";
+import { BindState } from "./FrameBuffer";
+import { PolylineParam } from "./Graphic";
+import { VariableType, VariableScope, VariablePrecision, ShaderType, VertexShaderComponent, FragmentShaderComponent } from "./ShaderBuilder";
+import { CompileStatus } from "./ShaderProgram";
+import { FeatureSymbologyOptions } from "./ShaderSource";
+import { ContextState } from "./System";
+import { FrustumUniformType, FrustumUniformPlane } from "./Target"
 
 export namespace GLES {}
   // CACHED GEOMETRY
@@ -61,8 +69,6 @@ export namespace GLES {}
     d: ViewportQuad;
     e: BentleyStatus; // was StatusInt;
     f: BufferHandle;
-    g: GLenum;
-    h: GLsizei;
     i: number | ArrayBuffer | ArrayBufferView | undefined; // was GLvoid
     j: Target;
     k: LineCode;
@@ -93,7 +99,6 @@ export namespace GLES {}
 
   export class IndexedGeometry extends CachedGeometry {
     ba: BufferHandle;
-    bb: GLsizei;
   } 
 
   export class IndexedGeometryCreateParams extends CachedGeometryCreateParams {
@@ -230,7 +235,6 @@ export namespace GLES {}
   }
   export class PointCloudGeometry extends CachedGeometry {
     ba: BufferHandle;
-    bb: GLsizei;
     bc: TechniqueId;
     bd: RenderPass;
     be: RenderOrder;
@@ -245,22 +249,18 @@ export namespace GLES {}
   }
   export class TexturedViewportQuadGeometry extends ViewportQuadGeometry {
     da: QBufferHandle2d; // ./Handle.ts
-    db: GLuint;
   }
   export class MultiTexturedViewportQuadGeometry extends TexturedViewportQuadGeometry {
-    ea: GLuint;
     eb: TechniqueId;
     ec: BufferHandle;
   }
   export class CompositeGeometry extends MultiTexturedViewportQuadGeometry {
-    fa: GLuint;
     fb: TechniqueId;
     fc: BufferHandle;
     fd: GLESTexture;
     fe: CompositeFlags;
   }
   export class SingleTextureViewportQuadGeometry extends MultiTexturedViewportQuadGeometry {
-    fa: GLuint;
     fb: TechniqueId;
     fc: GLESTexture;
   }
@@ -279,8 +279,6 @@ export namespace GLES {}
     bd: ShaderProgramParams;
     be: Transform;
   }
-  export const enum PushOrPop { Push, Pop }
-  export const enum OpCode { DrawBatchPrimitive, DrawOvrPrimitive, PushBranch, PopBranch }
   export class BatchPrimitive {
     a: Primitive;
     d: GLESBatch;
@@ -342,16 +340,12 @@ export namespace GLES {}
   export class EGLDisplaySurface {
     a: EGLDisplayContext;
     b: EGLSurface; 
-    c: GLuint;
     d: EGLNativeWindowType;
   }
   // FrameBuffer
-  export const enum BindState { Unbound, Bound, BoundWithAttachments, Suspended }
   export class FrameBuffer {
     c: GLESTexture;
-    d: GLuint;
     e: BindState;
-    f: GLenum;
     g: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     h: Point2d;
   }
@@ -485,16 +479,6 @@ export class Features {
     db: FillFlags; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     dc: TriMeshArgs;
   }
-  export const enum PolylineParam {
-    kNone = 0,
-    kSquare = 1*3,
-    kMitter = 2*3,
-    kMiterInsideOnly = 3*3,
-    kJointBase = 4*3,
-    kNegatePerp = 8*3,
-    kNegateAlong = 16*3,
-    kNoneAdjWt = 32*3,
-  }
   export class PolyLineVertex {
     a: FPoint3d;  //GeomLibs/PublicAPI/Geom/FPoint3d.h
     b: PolylineParam;
@@ -580,7 +564,6 @@ export class Features {
   }
   // SceneCompositor
   export class SceneCompositor {
-    a: GLsizei;
     b: GLESTexture;
     c: FrameBuffer;
     e: CachedGeometry;
@@ -588,7 +571,6 @@ export class Features {
     h: RenderCommands;
     i: RenderPass;
     j: RenderState;
-    j: GLint;
     k: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
     l: ByteStream; // ?
     m: RenderOrder;
@@ -607,44 +589,6 @@ export class Features {
     export function compileProgramFromFiles(vsPath: string, fsPath: string): GLuint;
   }
   // ShaderBuilder
-  // Describes the data type of a shader program variable.
-  export const enum VariableType {
-    Boolean, // bool
-    Int, // int
-    UInt, // uint
-    Float, // float
-    Vec2, // vec2
-    Vec3, // vec3
-    Vec4, // vec4
-    Mat3, // mat3
-    Mat4, // mat4
-    Sampler2D, // sampler2D
-    SamplerCube, //samplerCube
-    COUNT
-  }
-  // Describes the qualifier associated with a shader program variable.
-  export const enum VariableScope {
-    Local, // no qualifier
-    Varying, // varying
-    Uniform, // uniform
-    Attribute, // attribute
-
-    COUNT
-  }
-  // Describes the declared or undeclared precision of a shader program variable.
-  export const enum VariablePrecision {
-    Default, // undeclared precision - variable uses the explicit or implicit precision default for its type
-    Low, // lowp
-    Medium, // mediump
-    High, // highp
-
-    COUNT
-  }
-  export const enum ShaderType {
-    Fragment = 1 << 0,
-    Vertex = 1 << 1,
-    Both = Fragment | Vertex
-  }
   export class ShaderVariable {
     a: T_AddVariableBinding; // ./ShaderBuilder
     b: VariableType;
@@ -660,74 +604,6 @@ export class Features {
     e: VariableScope;
     f: VariablePrecision;
     g: ShaderProgram;
-  }
-  // Describes the optional and required components which can be assembled into complete
-  export const enum VertexShaderComponent {
-    // (Optional) Return true to discard this vertex before evaluating feature overrides etc, given the model-space position.
-    // bool checkForEarlyDiscard(vec4 rawPos)
-    CheckForEarlyDiscard,
-    // (Optional) Compute feature overrides like visibility, rgb, transparency, line weight.
-    ComputeFeatureOverrides,
-    // (Optional) Return true if this vertex should be "discarded" (is not visible)
-    // bool checkForDiscard()
-    // If this returns true, gl_Position will be set to 0; presumably related vertices will also do so, resulting in a degenerate triangle.
-    // If this returns true, no further processing will be performed.
-    CheckForDiscard,
-    // (Required) Return this vertex's position in clip space.
-    // vec4 computePosition(vec4 rawPos)
-    ComputePosition,
-    // (Optional) Compute the clip distance to send to the fragment shader.
-    // void calcClipDist(vec4 rawPos)
-    CalcClipDist,
-    // (Optional) Add the element id to the vertex shader.
-    // void computeElementId()
-    AddComputeElementId,
-
-    COUNT
-  }
-  // Describes the optional and required components which can be assembled into complete
-  export const enum FragmentShaderComponent {
-    // (Optional) Return true to immediately discard this fragment.
-    // bool checkForEarlyDiscard()
-    CheckForEarlyDiscard,
-    // (Required) Compute this fragment's base color
-    // vec4 computeBaseColor()
-    ComputeBaseColor,
-    // (Optional) Apply material overrides to base color
-    // vec4 applyMaterialOverrides(vec4 baseColor)
-    ApplyMaterialOverrides,
-    // (Optional) Apply feature overrides to base color
-    // vec4 applyFeatureColor(vec4 baseColor)
-    ApplyFeatureColor,
-    // (Optional) Adjust base color after material and/or feature overrides have been applied.
-    // vec4 finalizeBaseColor(vec4 baseColor)
-    FinalizeBaseColor,
-    // (Optional) Return true if this fragment should be discarded
-    // Do not invoke discard directly in your shader components - instead, return true from this function to generate a discard statement.
-    // bool checkForDiscard(vec4 baseColor)
-    CheckForDiscard,
-    // (Optional) Return true if the alpha value is not suitable for the current render pass
-    // bool discardByAlpha(float alpha)
-    DiscardByAlpha,
-    // (Optional) Apply lighting to base color
-    // vec4 applyLighting(vec4 baseColor)
-    ApplyLighting,
-    // (Optional) Apply monochrome overrides to base color
-    // vec4 applyMonochrome(vec4 baseColor)
-    ApplyMonochrome,
-    // (Optional) Apply white-on-white reversal to base color
-    ReverseWhiteOnWhite,
-    // (Optional) Apply flash hilite to lit base color
-    // vec4 applyFlash(vec4 baseColor)
-    ApplyFlash,
-    // (Required) Assign the final color to gl_FragColor or gl_FragData
-    // void assignFragData(vec4 baseColor)
-    AssignFragData,
-    // (Optional) Discard if outside any clipping planes
-    // void applyClipping()
-    ApplyClipping,
-
-    COUNT
   }
   export class ShaderBuilder {
     a: FragmentShaderComponent;
@@ -757,7 +633,6 @@ export class Features {
   }
   // ShaderProgram 
   export class ProgramBinding {
-    a: GLuint;
     b: Handle;
     c: UniformHandle; // ./Handle.ts
     d: assert; // was BeAssert;
@@ -776,10 +651,8 @@ export class Features {
     g: ShaderBinding;
     h: GraphicBinding;
   }
-  export const enum CompileStatus { Success, Failure, Uncompiled, }
   export class ShaderProgram {
     a: CompileStatus;
-    b: GLuint;
     c: ShaderBindings;
     d: GraphicBindings;
     e: GeometryType;
@@ -894,7 +767,6 @@ export class Features {
       a: ProgramBuilder;
       b: ShaderProgram;
     }
-    export const enum FeatureSymbologyOptions {}
     export class FeatureSymbologyHilite {
       a: FragmentShaderBuilder;
     }
@@ -934,7 +806,6 @@ export class Features {
       b: FrameBuffer;
       c: GLESTexture;
   }
-  export const enum ContextState { Uninitialized, Success, Error };
   export class System extends Render.System {
     a: ContextState;
     b: DisplayContext; // ./EGLDisplayContext.h
@@ -977,19 +848,6 @@ export class Features {
   //=======================================================================================
   // Target.h
   //=======================================================================================
-  export const enum FrustumUniformType {
-    TwoDee, Orthographic, Perspective
-  }
-  export const enum FrustumUniformPlane {
-    kTop,
-    kBottom,
-    kLeft,
-    kRight,
-    kNear,
-    kFar,
-    kType,
-    kCOUNT
-  }
   export class FrustumUniforms {
     a: FrustumUniformPlane;
     b: FrustumUniformType;
@@ -1209,43 +1067,6 @@ export class Features {
     f: DrawParams;
   }
   // Texture
-  export const enum TextureFlags {
-    None = 0,
-    UseMipMaps = 1 << 0,
-    Interpolate = 1 << 1,
-    PreserveData = 1 << 2,
-  }
-  export const enum GLESTextureInternalFormat {
-  //   Rgb             = GL_RGB,
-  //         Rgba            = GL_RGBA,
-  // #if defined(GLES3_CONFORMANT)
-  //         Rgba32f         = GL_RGBA32F,
-  //         Depth24Stencil8 = GL_DEPTH24_STENCIL8,
-  //         R8              = GL_R8,
-  //         DepthComponent24= GL_DEPTH_COMPONENT24,
-  // #else
-  //         DepthStencil    = GL_DEPTH_STENCIL,
-  //         Luminance       = GL_LUMINANCE,
-  //         DepthComponent  = GL_DEPTH_COMPONENT,
-  // #endif
-  }
-  export const enum GLESTextureFormat {
-    // Rgb             = GL_RGB,
-    //         Rgba            = GL_RGBA,
-    //         DepthStencil    = GL_DEPTH_STENCIL,
-    //         DepthComponent  = GL_DEPTH_COMPONENT,
-    // #if defined(GLES3_CONFORMANT)
-    //         Red             = GL_RED,
-    // #else
-    //         Luminance       = GL_LUMINANCE,
-    // #endif
-  }
-  export const enum GLESTextureDataType {
-    Float           = GL_FLOAT,
-    UnsignedByte    = GL_UNSIGNED_BYTE,
-    UnsignedInt24_8 = GL_UNSIGNED_INT_24_8,
-    UnsignedInt     = GL_UNSIGNED_INT,
-  }
   export class GLESTextureCreateParams {
     a: GLESTextureFormat;
     b: GLESTextureDataType;
@@ -1266,10 +1087,8 @@ export class Features {
   }
   export class GLESTexture {
     a: GLESTextureCreateParams;
-    b: GLuint;
     c: TextureUnit;
     d: UniformHandle; // ./Handle.ts
-    e: GLsizei;
     f: GLESTextureFormat;
     g: GLESTextureDataType;
     h: GLESTextureUpdater;
@@ -1281,7 +1100,6 @@ export class Features {
     c: IsTranslucent;
   }
   export class ColorTexture extends GLESTexture {
-    a: GLsizei;
     b: GLESTextureInternalFormat;
     c: GLESTextureDataType;
     d: IsTranslucent;
@@ -1297,12 +1115,8 @@ export class Features {
     h: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class GLESCubeMap {
-    a: GLsizei;
-    b: GLint;
-    c: GLenum;
     d: ByteStream; // ?
     e: UniformHandle; // ./Handle.ts
     f: TextureUnit;
-    g: GLuint;
   }
 }
