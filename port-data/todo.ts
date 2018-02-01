@@ -1,14 +1,14 @@
 import { ClipVector } from "@bentley/geometry-core/lib/numerics/ClipVector";
 import { ClipPlane } from "@bentley/geometry-core/lib/numerics/ClipPlanes";
 import { Matrix4d } from "@bentley/geometry-core/lib/numerics/Geometry4d";
-import { Transform, Point3d, Point2d, RotMatrix, Vector3d } from "@bentley/geometry-core/lib/PointVector";
+import { Transform, Point3d, Point2d, RotMatrix, Vector3d, Vector2d } from "@bentley/geometry-core/lib/PointVector";
 import { BentleyStatus } from "@bentley/bentleyjs-core/lib/Bentley";
 import { BeTimePoint } from "@bentley/bentleyjs-core/lib/Time";
 
 import { assert } from "chai";
 
 import { ColorDef } from "../../common/ColorDef";
-import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Graphic } from "../../common/Render";
+import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Graphic, Hilite } from "../../common/Render";
 
 import { BranchState, BranchStack } from "./BranchState";
 import { LineCode, EdgeOverrides } from "./EdgeOverrides";
@@ -587,16 +587,17 @@ export class Features {
     g: Target;
     h: RenderCommands;
     i: RenderPass;
-    i: GLint;
-    j: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
-    k: ByteStream;
-    l: RenderOrder;
-    m: ViewRect;
-    n: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
-    o: BeFileName;
-    p: IPixelDataBuffer;
-    q: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
-    r: PixelData.Selector;
+    j: RenderState;
+    j: GLint;
+    k: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
+    l: ByteStream; // ?
+    m: RenderOrder;
+    n: ViewRect; // ./ViewRect from GLESRender.h
+    o: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    q: string; // was BeFileName;
+    u: IPixelDataBuffer; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    v: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
+    w: PixelData.Selector; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   // ShaderUtils
   export namespace ShaderUtils {
@@ -645,18 +646,19 @@ export class Features {
     Both = Fragment | Vertex
   }
   export class ShaderVariable {
-    a: T_AddVariableBinding;
+    a: T_AddVariableBinding; // ./ShaderBuilder
     b: VariableType;
     c: VariableScope;
     d: VariablePrecision;
     e: assert; // was BeAssert;
+    f: ShaderProgram;
   }
   export class ShaderVariables {
     b: ShaderVariable;
-    c: ShaderVariableCR;
-    d: T_AddVariableBinding;
-    e: VariableType;
-    f: VariableScope;
+    c: T_AddVariableBinding; // ./ShaderBuilder
+    d: VariableType;
+    e: VariableScope;
+    f: VariablePrecision;
     g: ShaderProgram;
   }
   // Describes the optional and required components which can be assembled into complete
@@ -731,10 +733,12 @@ export class Features {
     a: FragmentShaderComponent;
     b: ShaderVariables;
     c: assert; // was BeAssert;
-    d: ShaderVariables;
-    f: T_AddVariableBinding;
-    g: VariablePrecision;
-    h: VariableType;
+    d: T_AddVariableBinding; // ./ShaderBuilder
+    e: VariablePrecision;
+    f: VariableType;
+  }
+  export class VertexShaderBuilder extends ShaderBuilder {
+    aa: VertexShaderComponent;
   }
   export class FragmentShaderBuilder extends ShaderBuilder {
     a: FragmentShaderComponent;
@@ -747,7 +751,7 @@ export class Features {
     e: FragmentShaderBuilder;
     h: ShaderVariable;
     i: ShaderType;
-    j: T_AddVariableBinding;
+    j: T_AddVariableBinding; // ./ShaderBuilder
     k: VariableScope;
     l: ShaderProgram;
   }
@@ -764,7 +768,7 @@ export class Features {
     c: T_Use;
   }
   export class GraphicBinding extends ProgramBinding {
-    a: T_Bind;
+    a: T_Bind; // ./ShaderProgram
     b: GraphicBinding;
     c: DrawParams;
     d: AttributeHandle; // ./Handle.ts
@@ -774,16 +778,15 @@ export class Features {
   }
   export const enum CompileStatus { Success, Failure, Uncompiled, }
   export class ShaderProgram {
-    a: ShaderProgramExecutor;
-    b: CompileStatus;
-    c: GLuint;
-    d: ShaderBindings;
-    e: GraphicBindings;
-    f: GeometryType;
-    g: DrawParams;
-    h: ShaderProgramParams;
-    i: ShaderBinding;
-    j: GraphicBinding;
+    a: CompileStatus;
+    b: GLuint;
+    c: ShaderBindings;
+    d: GraphicBindings;
+    e: GeometryType;
+    f: DrawParams;
+    g: ShaderProgramParams;
+    h: ShaderBinding;
+    i: GraphicBinding;
   }
   export class ShaderProgramExecutor {
     a: ShaderProgram;
@@ -799,15 +802,114 @@ export class Features {
   }
   // ShaderSource
   export namespace ShaderSource {
-    export function addViewport(ShaderBuilderR): void; // uniform vec4 u_viewport // the dimensions of the viewport
-    export function addViewportTransformation(ShaderBuilderR): void; // uniform mat4 u_viewportTransformation // transforms NDC to window coordinates
-    export function addRenderPass(ShaderBuilderR): void; // uniform float u_renderPass; // RenderPass value indicating current render pass plus kRenderPass_* constants
-    export function addFrustumPlanes(ShaderBuilderR): void; // uniform vec4 u_frustumPlanes; // { top, bottom, left, right }
-    export function addFrustum(ShaderBuilderR): void; // uniform vec3 u_frustum; // { near, far, type } type:0=2d,1=ortho,2=perspective; plus kFrustumType_* constants
+    export function addViewport(ShaderBuilder): void; // uniform vec4 u_viewport // the dimensions of the viewport
+    export function addViewportTransformation(ShaderBuilder): void; // uniform mat4 u_viewportTransformation // transforms NDC to window coordinates
+    export function addRenderPass(ShaderBuilder): void; // uniform float u_renderPass; // RenderPass value indicating current render pass plus kRenderPass_* constants
+    export function addFrustumPlanes(ShaderBuilder): void; // uniform vec4 u_frustumPlanes; // { top, bottom, left, right }
+    export function addFrustum(ShaderBuilder): void; // uniform vec3 u_frustum; // { near, far, type } type:0=2d,1=ortho,2=perspective; plus kFrustumType_* constants
     export class Lighting {
       a: ShaderProgram;
-      b: FragmentShaderBuilder;
-      c: ProgramBuilder;
+      b: ProgramBuilder;
+      c: FragmentShaderBuilder;
+    }
+    export class Vertex {
+      a: GraphicBinding;
+      b: DrawParams;
+      c: VertexShaderBuilder;
+    }
+    export class Fragment {
+      a: FragmentShaderBuilder;
+    }
+    export class LookupTable {
+      a: ShaderBuilder;
+    }
+    export class Clipping {
+      a: ShaderProgram;
+      b: ProgramBuilder;
+    }
+    export class Color {
+      a: ShaderProgram;
+      b: ProgramBuilder;
+      c: LUTDimension;
+    }
+    export class Monochrome {
+      a: FragmentShaderBuilder;
+    }
+    export class Material {
+      a: FragmentShaderBuilder;
+    }
+    export class Surface {
+      a: ShaderBuilder;
+      b: ProgramBuilder;
+      c: LUTDimension;
+      d: FeatureDimensions;
+      e: WithClipVolume;
+      f: FragmentShaderBuilder
+    }
+    export class Linear {
+      a: ProgramBuilder;
+      b: VertexShaderBuilder;
+    }
+    export class PolyLine {
+      a: ProgramBuilder;
+      b: WithClipVolume;
+      c: LUTDimension;
+      d: FeatureDimensions;
+    }
+    export class Edge {
+      a: ProgramBuilder;
+      b: WithClipVolume;
+      c: LUTDimension;
+    }
+    export class PointString {
+      a: ProgramBuilder;
+      b: WithClipVolume;
+      c: LUTDimension;
+      d: FeatureDimensions;
+    }
+    export class PointCloud {
+      a: ProgramBuilder;
+      b: WithClipVolume;
+    }
+    export class ViewportQuadCopyColor {
+      a: ShaderProgram;
+    }
+    export class ViewportQuad {
+      a: ProgramBuilder;
+    }
+    export class Translucency {
+      a: ProgramBuilder;
+    }
+    export class CompositeHilight {}
+    export class CompositeTranslucent {}
+    export class Composite {
+      a: ShaderProgram;
+      b: CompositeFlags;
+    }
+    export class ClearPickAndColor {
+      a: ProgramBuilder;
+      b: ShaderProgram;
+    }
+    export class OITClearTranslucent {
+      a: ProgramBuilder;
+      b: ShaderProgram;
+    }
+    export const enum FeatureSymbologyOptions {}
+    export class FeatureSymbologyHilite {
+      a: FragmentShaderBuilder;
+    }
+    export class FeatureSymbologyPingPong {
+      a: ShaderProgram;
+    }
+    export class FeatureSymbologyUniform {}
+    export class FeatureSymbologyNonUniform {}
+    export class FeatureSymbology {
+      a: ProgramBuilder;
+      b: FeatureDimensions;
+      c: ShaderBuilder;
+      d: FragmentShaderBuilder;
+      e: VertexShaderBuilder;
+      f: FeatureSymbologyOptions;
     }
   }
   // System
@@ -819,16 +921,24 @@ export class Features {
     d: Point3d;
   }
   export class ViewportQuad {
-    a: Point3dList;
+    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class TexturedViewportQuad extends ViewportQuad {
-    a: Point2dList;
+    a: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+  }
+  export class BoundFrameBufferStackBinding {
+    a: FrameBuffer;
+  }
+  export class BoundFrameBufferStack {
+      a: BoundFrameBufferStackBinding;
+      b: FrameBuffer;
+      c: GLESTexture;
   }
   export const enum ContextState { Uninitialized, Success, Error };
   export class System extends Render.System {
     a: ContextState;
-    b: DisplayContext;
-    c: DisplaySurface;
+    b: DisplayContext; // ./EGLDisplayContext.h
+    c: DisplaySurface; // ./EGLDisplayContext.h
     d: Techniques;
     e: ContextState;
     f: GLESTexture;
@@ -837,16 +947,15 @@ export class Features {
     i: TexturedViewportQuad;
     j: BoundFrameBufferStack;
     k: GLESCubemap;
-    l: Render.Target;
-    m: Render.Texture;
-    n: Render.Material;
-    o: Render.GraphicBuilder;
-    p: Render.Graphic;
+    l: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    m: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    n: Render.Material; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    o: Render.GraphicalBuilder; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    p: Render.Graphic; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     q: Graphic;
-    e: Light;
+    r: Light;
     s: Vector3d;
-    t: Point;
-    u: DisplayContext;
+    t: Point3d;
     v: Techniques;
     w: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
     x: ClipVector;
@@ -855,15 +964,11 @@ export class Features {
     ab: GraphicBranch; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ac: PointCloudPrimitive;
     ad: TriMeshPrimitive;
-    ae: PointCloudArgs;
+    ae: PointCloudArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     af: MeshEdgeArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    ag: TriMeshArgs;
-    ai: SilhouetteEdgeArgs;
-    ak: lighting;
-    al: DisplayContext;
-    am: Techniques;
-    an: RenderState;
-    ao: GLESTexture;
+    ag: TriMeshArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ai: SilhouetteEdgeArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    aj: ShaderSource.Lighting;
   }
       // static void OnTextureAllocated(GLESTexture const& texture);
       // static void OnTextureFreed(GLESTexture const& texture);
@@ -885,7 +990,7 @@ export class Features {
     kType,
     kCOUNT
   }
-  export class FrustumUnifoms {
+  export class FrustumUniforms {
     a: FrustumUniformPlane;
     b: FrustumUniformType;
   }
@@ -898,20 +1003,22 @@ export class Features {
     a: Target;
     b: Vector3d;
   }
+  export class RenderScope {
+    a: GLES.Target;
+  }
   export class Target extends Render.Target {
     a: System;
-    b: Render.TileSizeAdjuster;
+    b: Render.TileSizeAdjuster; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     c: ColorDef;
-    d: HiliteSettings;
+    d: Hilite.Settings; // was HiliteSettings;
     e: GLESClips;
-    f: Matrix4;
+    f: Matrix4; // was DMatrix4d
     g: Transform;
     h: RenderCommands;
     l: SceneCompositor;
     m: Point3d;
     n: BranchStack;
-    o: Frustum;
-    p: bset;
+    o: Frustum; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
     q: GLESBatch;
     r: BeTimePoint;
     s: FeatureOverrides;
@@ -925,6 +1032,7 @@ export class Features {
     aa: WorldDecorations;
     ab: EdgeOverrides;
     ac: Vector3d;
+    ad: ShaderLight;
     ae: GLES.Texture;
     ef: Image;
     eg: IPixelDataBuffer;
@@ -936,8 +1044,9 @@ export class Features {
     am: GraphicList;
     an: ClipVector;
     ao: Point2d;
-    aq: SceneLights;
-    ar: Render.Device;
+    ap: Vector2d;
+    aq: SceneLights; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ar: Render.Device; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     as: Techniques;
     at: ViewFlags;
     au: GLESBranch;
@@ -948,20 +1057,28 @@ export class Features {
     bc: RenderPass;
     bd: LineCode;
     be: FloatPreMulRgba;
+    bf: Decorations;
+    bg: DecorationList;
+    bh: FeatureSymbologyOverrides; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    bi: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    bj: RenderState;
+    bk: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+
   }
   export class OnScreenTarget extends Target {
     a: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
     b: FrameBuffer;
-    c: Render.Device;
-    d: Render.Target;
+    c: Render.Device; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    d: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     e: System;
+    f: DisplaySurface; // ./EGLDisplayContext.h
   }
   export class OffScreenTarget extends Target {
     a: FrameBuffer;
     b: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
     c: System;
-    d: Render.Device;
-    e: Render.Target;
+    d: Render.Device; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    e: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   // Technique 
   export class ShaderPrograms {
@@ -974,23 +1091,28 @@ export class Features {
     c: TechniqueFlags;
   }
   export class SingularTechnique extends Technique {
-    a: ShaderProgram;
-    b: TechniqueFlags;
-    c: ShaderPrograms;
+    aa: ShaderProgram;
+    ab: TechniqueFlags;
+    ac: ShaderPrograms;
   }
   export class VariedTechnique extends Technique {
-    a: ShaderProgram;
-    b: TechniqueFlags;
-    c: ProgramBuilder;
-    d: FeatureDimensions;
-    e: WithClipVolume;
-    f: FSOptions;
-    g: FragmentShaderComponent;
-    h: VertexShaderComponent;
-    k: ShaderSource;
-    l: FeatureSymbology;
+    aa: ShaderProgram;
+    ab: TechniqueFlags;
+    ac: ProgramBuilder;
+    ad: FeatureDimensions;
+    ae: WithClipVolume;
+    af: ShaderSource.FeatureSymbologyOptions; // was FSOptions;
+    ag: FragmentShaderComponent;
+    ah: VertexShaderComponent;
+    ak: ShaderSource.Fragment;
+    al: ShaderSource.FeatureSymbology;
+    am: ShaderSource.FeatureSymbologyUniform;
+    an: VariableType;
+    ao: ShaderSource.Vertex;
+    ap: ShaderSource.Translucency;
+    aq: ShaderPrograms;
   }
-  export const enum ShaderIndex {
+  export const enum SurfaceTechniqueShaderIndex {
     kOpaque = 0,
     kTranslucent = 2,
     kOverrides = 4,
@@ -1000,43 +1122,84 @@ export class Features {
     kClip = kHilite + NumHiliteVariants()
   }
   export class SurfaceTechnique extends VariedTechnique {
-    a: ShaderIndex;
-    b: TechniqueFlags;
-    c: WithClipVolume;
-    d: LUTDimension;
-    e: ShaderSource;
-    f: FeatureDimensions;
-    g: FSOptions;
+    ba: SurfaceTechniqueShaderIndex;
+    bb: TechniqueFlags;
+    bc: WithClipVolume;
+    bd: LUTDimension;
+    be: ShaderSource.Surface;
+    bf: FeatureDimensions;
+    bg: ShaderSource.FeatureSymbologyOptions; // was FSOptions;
+    bh: ShaderSource.Material;
+    bi: Technique;
+  }
+  export const enum PolylineTechniqueShaderIndex {
+    kOpaque = 0,
+    kTranslucent = 2,
+    kOverrides = 4,
+    kMonochrome = 8,
+    kFeature = 16,
+    kHilite = NumFeatureVariants(kFeature),
+    kClip = kHilite + NumHiliteVariants()
   }
   export class PolylineTechnique extends VariedTechnique {
-    a: ShaderIndex;
-    b: TechniqueFlags;
-    c: ShaderSource;
-    d: FeatureDimensions;
-    e: LUTDimension;
-    f: FSOptions;
+    ba: PolylineTechniqueShaderIndex;
+    bb: TechniqueFlags;
+    bc: ShaderSource.PolyLine;
+    bd: FeatureDimensions;
+    be: LUTDimension;
+    bf: ShaderSource.FeatureSymbologyOptions; // was FSOptions;
+    bg: WithClipVolume;
+    bh: ShaderSource.FeatureSymbology;
+    bi: Technique;
   }
-  export class EdgeTechnique extends VariedTechnique {
-    a: ShaderIndex;
-    b: TechniqueFlags;
-    c: FeatureDimensions;
-    d: ShaderSource;
-    e: FSOptions;
+  export const enum EdgeTechniqueShaderIndex {
+    kOpaque = 0,
+    kTranslucent = 2,
+    kOverrides = 4,
+    kMonochrome = 8,
+    kFeature = 16,
+    kClip = kHilite + NumHiliteVariants()
+  }
+ export class EdgeTechnique extends VariedTechnique {
+    ba: EdgeTechniqueShaderIndex;
+    bb: TechniqueFlags;
+    bc: FeatureDimensions;
+    bd: ShaderSource.Edge;
+    be: ShaderSource.FeatureSymbologyOptions; // was FSOptions;
+    bf: LUTDimension;
+    bg: WithClipVolume;
+    bh: Technique;
+    bi: ShaderSource.FeatureSymbology;
   }
   export class SilhouetteEdgeTechnique extends EdgeTechnique {}
+  export const enum PointStringTechniqueShaderIndex {
+    kOpaque = 0,
+    kTranslucent = 2,
+    kOverrides = 4,
+    kMonochrome = 8,
+    kFeature = 16,
+    kHilite = NumFeatureVariants(kFeature),
+    kClip = kHilite + NumHiliteVariants()
+  }
   export class PointStringTechnique extends VariedTechnique {
-    a: ShaderIndex;
-    b: TechniqueFlags;
-    c: WithClipVolume;
-    d: LUTDimension;
-    e: ShaderSource;
-    f: FSPOptions;
+    ba: PointStringTechniqueShaderIndex;
+    bb: TechniqueFlags;
+    bc: WithClipVolume;
+    bd: LUTDimension;
+    be: ShaderSource.PointString;
+    bf: ShaderSource.FeatureSymbologyOptions; // was FSPOptions;
+    bg: FeatureDimensions;
+    bh: Technique;
+    bi: ShaderSource.FeatureSymbology;
+    bj:
   }
   export class PointCloudTechnique extends VariedTechnique {
-    a: TechniqueFlags;
-    b: WithClipVolume;
-    c: FragmentShaderComponent;
-    d: ShaderSource;
+    ba: TechniqueFlags;
+    bb: WithClipVolume;
+    bc: FragmentShaderComponent;
+    bd: ShaderSource.PointCloud;
+    be: ShaderSource.Fragment;
+    bf: Technique;
   }
   export class Techniques {
     b: Technique;
@@ -1086,15 +1249,19 @@ export class Features {
   export class GLESTextureCreateParams {
     a: GLESTextureFormat;
     b: GLESTextureDataType;
-    c: ByteStream;
+    c: ByteStream; // ?
     d: Point2d;
     e: GLESTextureInternalFormat;
-    f: WrapMode;
+    f: GL.WrapMode; // was WrapMode;
     g: TextureFlags;
-    h: Render.Image;
+    h: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    i: IsTranslucent;
+    j: GLESTexture;
+    k: UniformHandle; // ./Handle.ts
+    l: TextureUnit;
   }
   export class GLESTextureUpdater {
-    a: ByteStream;
+    a: ByteStream; // ?
     b: OvrFlags;
   }
   export class GLESTexture {
@@ -1109,8 +1276,8 @@ export class Features {
     i: ImageUpdater;
   }
   export class ImageTexture extends GLESTexture {
-    a: Image;
-    b: Render.Texture;
+    a: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    b: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     c: IsTranslucent;
   }
   export class ColorTexture extends GLESTexture {
@@ -1121,19 +1288,19 @@ export class Features {
   }
   export class Texture extends Render.Texture {
     a: ImageTexture;
-    b: ImageSource;
+    b: Render.ImageSource; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     c: IsTranslucent;
-    d: GLESTextureCreateParams;
+    d: Render.Texture.CreateParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     e: UnformHandle; // ./Handle.ts
     f: TextureUnit;
     g: assert; // was BeAssert;
-    h: Image;
+    h: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class GLESCubeMap {
     a: GLsizei;
     b: GLint;
-    c: CLenum;
-    d: ByteStream;
+    c: GLenum;
+    d: ByteStream; // ?
     e: UniformHandle; // ./Handle.ts
     f: TextureUnit;
     g: GLuint;
