@@ -19,7 +19,7 @@ import { RenderPass, GeometryType, TextureUnit, RenderOrder, isPlanar, isSurface
 import { RenderStateFlags, RenderStateBlend, RenderState } from "./RenderState";
 import { Mode, WithClipVolume, TechniqueFlags } from "./TechniqueFlags";
 import { BuiltInTechniqueId, TechniqueId } from "./TechniqueId";
-import { Handle, BufferHandle, QBufferHandle32d, QBufferHandle3d, AttributeHandle, UniformHandle } from "./Handle";
+import { Handle, BufferHandle, QBufferHandle2d, QBufferHandle3d, AttributeHandle, UniformHandle } from "./Handle";
 import { PushOrPop, OpCode } from "./DrawCommand";
 import { BindState } from "./FrameBuffer";
 import { PolylineParam } from "./Graphic";
