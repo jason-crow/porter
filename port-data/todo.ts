@@ -28,7 +28,7 @@ import { CompileStatus } from "./ShaderProgram";
 import { FeatureSymbologyOptions } from "./ShaderSource";
 import { ContextState } from "./System";
 import { FrustumUniformType, FrustumUniformPlane } from "./Target"
-import { TextureFlags, GLESTextureInternalFormat, GLESTextureFormat, GLESTextureDataType } from "./Texture"
+import { TextureFlags } from "./Texture"
 
 export namespace GLES {}
   // CACHED GEOMETRY
@@ -1090,10 +1090,9 @@ export class Features {
     a: GLESTextureCreateParams;
     c: TextureUnit;
     d: UniformHandle; // ./Handle.ts
-    f: GLESTextureFormat;
-    g: GLESTextureDataType;
+    f: GL.TextureFormat; // was GLESTextureFormat;
+    g: GL.TextureDataType; // was GLESTextureDataType;
     h: GLESTextureUpdater;
-    i: ImageUpdater;
   }
   export class ImageTexture extends GLESTexture {
     aa: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -1101,8 +1100,8 @@ export class Features {
     ac: IsTranslucent;
   }
   export class ColorTexture extends GLESTexture {
-    ab: GLESTextureInternalFormat;
-    ac: GLESTextureDataType;
+    ab: GL.InternalTextureFormat; // was GLESTextureInternalFormat;
+    ac: GL.TextureDataType; // GLESTextureDataType;
     ad: IsTranslucent;
   }
   export class Texture extends Render.Texture {
