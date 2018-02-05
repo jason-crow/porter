@@ -26,9 +26,10 @@ import { PolylineParam } from "./Graphic";
 import { VariableType, VariableScope, VariablePrecision, ShaderType, VertexShaderComponent, FragmentShaderComponent } from "./ShaderBuilder";
 import { CompileStatus } from "./ShaderProgram";
 import { FeatureSymbologyOptions } from "./ShaderSource";
-import { ContextState } from "./System";
-import { FrustumUniformType, FrustumUniformPlane } from "./Target"
-import { TextureFlags } from "./Texture"
+import { ContextState, Capabilities } from "./System";
+import { FrustumUniformType, FrustumUniformPlane } from "./Target";
+import { TextureFlags } from "./Texture";
+import { Matrix3, Matrix4 } from "./Matrix";
 
 export namespace GLES {}
   // CACHED GEOMETRY
@@ -552,17 +553,6 @@ export class Features {
     export function lookAt(eye: Point3d, center: Point3d, up: Vector3d): Transform;
     export function lookIn(eye: Point3d, normalizedViewX: Vector3d, normalizedViewY: Vector3d, normalizedViewZ: Vector3d): Transform;
   }
-  export class Matrix3 {
-    a: RotMatrix;
-  }
-  export class Matrix4 {
-    a: Point3d;
-    b: Vector3d;
-    c: Transform;
-    d: Matrix4d;
-    g: Transform;
-    h: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
-  }
   // SceneCompositor
   export class SceneCompositor {
     b: GLESTexture;
@@ -786,7 +776,6 @@ export class Features {
     }
   }
   // System
-  export class Capabilities {}
   export class Light extends Render.Light {
     a: Lighting;
     b: ColorDef;
