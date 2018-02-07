@@ -1,7 +1,8 @@
 import { ClipVector } from "@bentley/geometry-core/lib/numerics/ClipVector";
 import { ClipPlane } from "@bentley/geometry-core/lib/numerics/ClipPlanes";
 import { Matrix4d } from "@bentley/geometry-core/lib/numerics/Geometry4d";
-import { Transform, Point3d, Point2d, RotMatrix, Vector3d, Vector2d } from "@bentley/geometry-core/lib/PointVector";
+import { Point3d, Point2d, Vector3d, Vector2d } from "@bentley/geometry-core/lib/PointVector";
+import { RotMatrix, Transform} from "@bentley/geometry-core/lib/Transform";
 import { BentleyStatus } from "@bentley/bentleyjs-core/lib/Bentley";
 import { BeTimePoint } from "@bentley/bentleyjs-core/lib/Time";
 
@@ -25,9 +26,9 @@ import { BindState } from "./FrameBuffer";
 import { PolylineParam } from "./Graphic";
 import { VariableType, VariableScope, VariablePrecision, ShaderType, VertexShaderComponent, FragmentShaderComponent } from "./ShaderBuilder";
 import { CompileStatus } from "./ShaderProgram";
-import { FeatureSymbologyOptions } from "./ShaderSource";
+import { ShaderSource } from "./ShaderSource";
 import { ContextState, Capabilities } from "./System";
-import { FrustumUniformType, FrustumUniformPlane } from "./Target";
+import { FrustumUniformType, FrustumUniforms } from "./Target";
 import { TextureFlags } from "./Texture";
 import { Matrix3, Matrix4 } from "./Matrix";
 
@@ -665,7 +666,7 @@ export class Features {
     n: GLESBranch;
   }
   // ShaderSource
-  export namespace ShaderSource {
+  namespace ShaderSource {
     export function addViewport(ShaderBuilder): void; // uniform vec4 u_viewport // the dimensions of the viewport
     export function addViewportTransformation(ShaderBuilder): void; // uniform mat4 u_viewportTransformation // transforms NDC to window coordinates
     export function addRenderPass(ShaderBuilder): void; // uniform float u_renderPass; // RenderPass value indicating current render pass plus kRenderPass_* constants
@@ -744,8 +745,6 @@ export class Features {
     export class Translucency {
       a: ProgramBuilder;
     }
-    export class CompositeHilight {}
-    export class CompositeTranslucent {}
     export class Composite {
       a: ShaderProgram;
       b: CompositeFlags;
@@ -764,20 +763,18 @@ export class Features {
     export class FeatureSymbologyPingPong {
       a: ShaderProgram;
     }
-    export class FeatureSymbologyUniform {}
-    export class FeatureSymbologyNonUniform {}
     export class FeatureSymbology {
       a: ProgramBuilder;
       b: FeatureDimensions;
       c: ShaderBuilder;
       d: FragmentShaderBuilder;
       e: VertexShaderBuilder;
-      f: FeatureSymbologyOptions;
+      f: ShaderSource.FeatureSymbologyOptions;
     }
   }
   // System
   export class Light extends Render.Light {
-    a: Lighting;
+    a: Lighting; // // DgnPlatform/PublicAPI/DgnPlatform/Lighting.h
     b: ColorDef;
     c: Vector3d;
     d: Point3d;
@@ -829,7 +826,7 @@ export class Features {
     af: MeshEdgeArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ag: TriMeshArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ai: SilhouetteEdgeArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    aj: ShaderSource.Lighting;
+    aj: Lighting; // // DgnPlatform/PublicAPI/DgnPlatform/Lighting.h
   }
       // static void OnTextureAllocated(GLESTexture const& texture);
       // static void OnTextureFreed(GLESTexture const& texture);
@@ -838,10 +835,6 @@ export class Features {
   //=======================================================================================
   // Target.h
   //=======================================================================================
-  export class FrustumUniforms {
-    a: FrustumUniformPlane;
-    b: FrustumUniformType;
-  }
   export class GLESClips {
     a: ClipVector;
     b: ClipPlane;
