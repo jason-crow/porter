@@ -28,7 +28,7 @@ import { VariableType, VariableScope, VariablePrecision, ShaderType, VertexShade
 import { CompileStatus } from "./ShaderProgram";
 import { ShaderSource } from "./ShaderSource";
 import { ContextState, Capabilities } from "./System";
-import { FrustumUniformType, FrustumUniforms } from "./Target";
+import { FrustumUniformType, FrustumUniforms, GLESClips } from "./Target";
 import { TextureFlags } from "./Texture";
 import { Matrix3, Matrix4 } from "./Matrix";
 
@@ -835,11 +835,6 @@ export class Features {
   //=======================================================================================
   // Target.h
   //=======================================================================================
-  export class GLESClips {
-    a: ClipVector;
-    b: ClipPlane;
-    c: Transform;
-  }
   export class ShaderLight {
     a: Target;
     b: Vector3d;
