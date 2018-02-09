@@ -628,6 +628,7 @@ export class Features {
     b: Handle;
     c: UniformHandle; // ./Handle.ts
     d: assert; // was BeAssert;
+    e: System;
   }
   export class ShaderBinding extends ProgramBinding {
     a: UniformHandle; // ./Handle.ts
