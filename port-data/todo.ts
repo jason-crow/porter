@@ -69,6 +69,7 @@ export namespace GLES {}
   export class CachedGeometry {
     a: QBufferHandle3d; // ./Handle.ts
     b: QPoint3d; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    c: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     d: ViewportQuad;
     e: BentleyStatus; // was StatusInt;
     f: BufferHandle;
@@ -97,7 +98,7 @@ export namespace GLES {}
   }
 
   export class CachedGeometryCreateParams {
-    a: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
 
   export class IndexedGeometry extends CachedGeometry {
@@ -106,7 +107,7 @@ export namespace GLES {}
 
   export class IndexedGeometryCreateParams extends CachedGeometryCreateParams {
     ba: UInt32List; // ./GLESCommon.h
-    bb: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    bb: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
 
   export class MeshGeometry extends IndexedGeometry {
@@ -123,7 +124,7 @@ export namespace GLES {}
   }
 
   export class MeshGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     cb: ColorDef;
     cc: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     cd: FillFlags; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -183,7 +184,7 @@ export namespace GLES {}
     ck: ColorData;
   }
   export class PolylineGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     cc: ColorTable:
     cd: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ce: LineCode;
@@ -203,7 +204,7 @@ export namespace GLES {}
     cj: ColorData;
   }
   export class EdgeGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     cc: ColorTable;
     cd: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ce: LineCode;
@@ -217,7 +218,7 @@ export namespace GLES {}
   }
   export class SilhouetteEdgeGeometryCreateParams extends EdgeGeometryCreateParams {
     da: OctEncodedNormalPairList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    db: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    db: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     dd: ColorTable;
     de: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     df: LinePixels;
@@ -234,7 +235,7 @@ export namespace GLES {}
   export class PointStringGeometryCreateParams extends IndexedGeometryCreateParams {
     ca: ColorTable;
     cb: FeatureIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    cc: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    cc: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class PointCloudGeometry extends CachedGeometry {
     ba: BufferHandle;
@@ -243,7 +244,7 @@ export namespace GLES {}
     be: RenderOrder;
   }
   export class PointCloudGeometryCreateParams extends CachedGeometryCreateParams {
-    bb: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    bb: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class ViewportQuadGeometry extends IndexedGeometry {
     ca: TechniqueId;
@@ -443,7 +444,7 @@ export namespace GLES {}
     af: GLESBatch;
   }
   export class PrimitiveParams {
-    a: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     b: QPoint3d; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class Primitive extends GLESGraphic {
@@ -487,7 +488,7 @@ export class Features {
     bb: Vertex;
     bc: IndexedPolylineArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: CachedGeometry;
-    be: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    be: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bg: QPoint3d; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bh: PolylineParamVertex;
     bi: FPoint3d; //GeomLibs/PublicAPI/Geom/FPoint3d.h
@@ -777,7 +778,7 @@ export class Features {
     d: Point3d;
   }
   export class ViewportQuad {
-    a: QPoint3d; // was QPoint3dList; use QPoint3d[]
+    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class TexturedViewportQuad extends ViewportQuad {
     a: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
