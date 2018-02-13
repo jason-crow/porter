@@ -25,7 +25,7 @@ import { BuiltInTechniqueId, TechniqueId } from "./TechniqueId";
 import { Handle, BufferHandle, QBufferHandle2d, QBufferHandle3d, AttributeHandle, UniformHandle } from "./Handle";
 import { PushOrPop, OpCode } from "./DrawCommand";
 import { BindState } from "./FrameBuffer";
-import { PolylineParam, PolylineParamVertex } from "./Graphic";
+import { IndexedPrimitiveParamsFeatures, PolylineParam, PolylineParamVertex } from "./Graphic";
 import { VariableType, VariableScope, VariablePrecision, ShaderType, VertexShaderComponent, FragmentShaderComponent } from "./ShaderBuilder";
 import { CompileStatus } from "./ShaderProgram";
 import { ShaderSource } from "./ShaderSource";
@@ -451,9 +451,6 @@ export namespace GLES {}
     af: TechniqueId;
     ag: Target;
     ah: ShaderProgramExecutor;
-  }
-export class IndexedPrimitiveParamsFeatures {
-    b: FeatureIndex;
   }
   export class IndexedPrimitiveParams extends PrimitiveParams {
     aa: IndexedPrimitiveParamsFeatures;
