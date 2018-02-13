@@ -452,11 +452,11 @@ export namespace GLES {}
     ag: Target;
     ah: ShaderProgramExecutor;
   }
-export class Features {
+export class IndexedPrimitiveParamsFeatures {
     b: FeatureIndex;
   }
   export class IndexedPrimitiveParams extends PrimitiveParams {
-    aa: Features;
+    aa: IndexedPrimitiveParamsFeatures;
     ab: ColorTable;
     ac: ColorIndex; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ad: FeatureIndex;
