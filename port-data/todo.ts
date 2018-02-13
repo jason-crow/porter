@@ -12,6 +12,7 @@ import { ColorDef } from "../../common/ColorDef";
 import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Graphic, Hilite } from "../../common/Render";
 
 import { BranchState, BranchStack } from "./BranchState";
+import { FeatureIndices } from "./CachedGeometry";
 import { LineCode, EdgeOverrides } from "./EdgeOverrides";
 import { LUTDimension, LUTParams, FeatureDimension, FeatureDimensions, FeatureDimensionsIterator } from "./FeatureDimensions";
 import { FeatureIndexType, FeatureIndex } from "./FeatureIndex";
@@ -51,10 +52,6 @@ export namespace GLES {}
     a: NonUniformColor;
     b: LUTDimension;
     c: FloatPreMulRgba;
-  }
-  export class FeatureIndices {
-    a: BufferHandle;
-    b: FeatureIndex;
   }
   export class LitMeshData {
     a: BufferHandle;
