@@ -12,7 +12,7 @@ import { Id64, Id64Set } from "@bentley/bentleyjs-core/lib/Id";
 import { assert } from "chai";
 
 import { ColorDef } from "../../common/ColorDef";
-import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Graphic, Hilite } from "../../common/Render";
+import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Hilite, GraphicBuilder } from "../../common/Render";
 import { Frustum } from "../../common/Frustum";
 import { Light } from "../../common/Lighting";
 
@@ -56,42 +56,7 @@ export class GraphicBuilderCreateParams {
   b: Transform;
   c: DgnViewport;
 }
-export class GraphicBuilder {
-  a: GraphicBuilderCreateParams;
-  b: DgnDb;  // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
-  d: Graphic;
-  e: GeometryStreamEntryId;
-  f: GraphicParams;
-  g: GeometryParams;
-  h: Point3d;
-  i: Point2d;
-  j: DEllipse3d;
-  k: MSBsplineCurve;
-  l: CurveVector;
-  m: ISolidPrimitive;
-  n: MSBsplineSurface;
-  o: PolyfaceQuery;
-  p: IBRepEntity;
-  q: Texture;
-  r: TriMeshArgs;
-  s: DgnOleDraw;
-  t: ClipVector;
-  u: GraphicBuilder;
-  v: LineStyleSymb;
-  w: IFacetOptions;
-  x: PatternParams;
-  y: IBRepEntity;
-  z: CurveVector;
-  aa: PolyfaceHeader;
-  ab: AsThickenedLine;
-  ac: Vector3d;
-  ad: Range3d;
-  ae: LineSegment3d; // was Segment3d;
-  af: ColorDef;
-  ag: LinePixels;
-}
 export class ColorIndex {
-  a: 
 }
 
 export namespace GLES {}
@@ -857,7 +822,7 @@ export namespace GLES {}
     l: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     m: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     n: Render.Material; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    o: Render.GraphicalBuilder; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    o: GraphicBuilderCreateParams;
     p: Render.Graphic; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     q: Graphic;
     r: Light;
