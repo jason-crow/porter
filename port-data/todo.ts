@@ -394,7 +394,7 @@ export namespace GLES {}
   }
   export class OvrPrimitive {
     a: Primitive;
-    b: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    b: OvrGraphicParams;
   }
   export class DrawCommand {
     a: BatchPrimitive;
@@ -425,7 +425,7 @@ export namespace GLES {}
     h: GLESGraphic;
     j: Graphic;
     k: DrawCommand;
-    l: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    l: OvrGraphicParams;
     m: GLESBranch;
     n: assert; // was BeAssert;
     p: ViewFlags;
@@ -479,7 +479,7 @@ export namespace GLES {}
   export class Uniform {
     a: FloatRgba;
     b: OvrFlags;
-    c: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    c: OvrGraphicParams;
     d: FeatureTable;
     e: FeatureSymbologyOverrides;
     f: Id64Set; // Was DgnElementIdSet
@@ -500,7 +500,7 @@ export namespace GLES {}
     d: BeTimePoint;
     e: LUTDimension;
     f: FeatureTable;
-    g: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    g: OvrGraphicParams;
     i: GLESTexture;
   }
   export class PickTable {
@@ -535,7 +535,7 @@ export namespace GLES {}
     ak: ShaderProgramExecutor;
   }
   export class WorldDecorations extends GLESBranch {
-    bc: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    bc: OvrGraphicParams;
     bd: IModelConnection; // was DgnDb
     be: ViewFlags;
     bf: DecorationList;
@@ -583,7 +583,7 @@ export namespace GLES {}
   export class TriMeshPrimitive extends IndexedPrimitive {
     da: TriMeshParams;
     db: FillFlags;
-    dc: TriMeshArgs;
+    dc: TriMeshArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class PolylineParams extends IndexedPrimitiveParams {
     ba: PolylineParam;
@@ -612,9 +612,9 @@ export namespace GLES {}
     ec: MeshEdgeArgs;
   }
   export class SilhouetteEdgeParams extends EdgeParams {
-    ca: OctEncodedNormalPairList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ca: OctEncodedNormalPairList;
     cb: SilhouetteEdgeArgs;
-    cd: OctEncodedNormalPair; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    cd: OctEncodedNormalPair;
   }
   export class SilhouetteEdgePrimitive extends EdgePrimitiveBase {
     ea: SilhouetteEdgeParams;
@@ -960,7 +960,7 @@ export namespace GLES {}
     r: BeTimePoint;
     s: FeatureOverrides;
     t: FeatureSymbologyOverrides;
-    u: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    u: OvrGraphicParams;
     v: Id64Set; // Was DgnElementIdSet
     w: PickTable;
     x: FrustumUniforms;
