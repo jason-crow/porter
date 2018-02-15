@@ -5,11 +5,18 @@ import { Point3d, Point2d, Vector3d, Vector2d } from "@bentley/geometry-core/lib
 import { RotMatrix, Transform} from "@bentley/geometry-core/lib/Transform";
 import { BentleyStatus } from "@bentley/bentleyjs-core/lib/Bentley";
 import { BeTimePoint } from "@bentley/bentleyjs-core/lib/Time";
+import { Range3d, Range2d } from "@bentley/geometry-core/lib/Range";
+import { LineSegment3d } from "@bentley/geometry-core/lib/curve/LineSegment3d";
+import { Id64, Id64Set } from "@bentley/bentleyjs-core/lib/Id";
 
 import { assert } from "chai";
 
 import { ColorDef } from "../../common/ColorDef";
 import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Graphic, Hilite } from "../../common/Render";
+import { Frustum } from "../../common/Frustum";
+import { Light } from "../../common/Lighting";
+
+import { IModelConnection } from "../IModelConnection";
 
 import { BranchState, BranchStack } from "./BranchState";
 import { FeatureIndices } from "./CachedGeometry";
@@ -33,7 +40,59 @@ import { ContextState, Capabilities } from "./System";
 import { FrustumUniformType, FrustumUniforms, GLESClips } from "./Target";
 import { TextureFlags } from "./Texture";
 import { Matrix3, Matrix4 } from "./Matrix";
-import { QPoint3d } from "./QPoint";
+import { QPoint3d, QPoint2d, QPoint3dList, QPoint2dList } from "./QPoint";
+import { OctEncodedNormal } from "./OctEncodedNormal";
+
+// RENDER.H
+
+export class Graphic {
+  a: IModelConnection; // was DgnDb
+}
+export class GraphicBuilderTileCorners {
+  a: Point3d;
+}
+export class GraphicBuilderCreateParams {
+  a: IModelConnection; // was DgnDb
+  b: Transform;
+  c: DgnViewport;
+}
+export class GraphicBuilder {
+  a: GraphicBuilderCreateParams;
+  b: DgnDb;  // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+  d: Graphic;
+  e: GeometryStreamEntryId;
+  f: GraphicParams;
+  g: GeometryParams;
+  h: Point3d;
+  i: Point2d;
+  j: DEllipse3d;
+  k: MSBsplineCurve;
+  l: CurveVector;
+  m: ISolidPrimitive;
+  n: MSBsplineSurface;
+  o: PolyfaceQuery;
+  p: IBRepEntity;
+  q: Texture;
+  r: TriMeshArgs;
+  s: DgnOleDraw;
+  t: ClipVector;
+  u: GraphicBuilder;
+  v: LineStyleSymb;
+  w: IFacetOptions;
+  x: PatternParams;
+  y: IBRepEntity;
+  z: CurveVector;
+  aa: PolyfaceHeader;
+  ab: AsThickenedLine;
+  ac: Vector3d;
+  ad: Range3d;
+  ae: LineSegment3d; // was Segment3d;
+  af: ColorDef;
+  ag: LinePixels;
+}
+export class ColorIndex {
+  a: 
+}
 
 export namespace GLES {}
   // CACHED GEOMETRY
@@ -64,7 +123,7 @@ export namespace GLES {}
   export class CachedGeometry {
     a: QBufferHandle3d; // ./Handle.ts
     b: QPoint3d;
-    c: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    c: QPoint3dList;
     d: ViewportQuad;
     e: BentleyStatus; // was StatusInt;
     f: BufferHandle;
@@ -93,7 +152,7 @@ export namespace GLES {}
   }
 
   export class CachedGeometryCreateParams {
-    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    a: QPoint3dList;
   }
 
   export class IndexedGeometry extends CachedGeometry {
@@ -102,7 +161,7 @@ export namespace GLES {}
 
   export class IndexedGeometryCreateParams extends CachedGeometryCreateParams {
     ba: UInt32List; // ./GLESCommon.h
-    bb: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    bb: QPoint3dList;
   }
 
   export class MeshGeometry extends IndexedGeometry {
@@ -119,7 +178,7 @@ export namespace GLES {}
   }
 
   export class MeshGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ca: QPoint3dList;
     cb: ColorDef;
     cc: FeatureIndex;
     cd: FillFlags; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -134,7 +193,7 @@ export namespace GLES {}
   }
 
   export class TexturedMeshGeometryCreateParams extends MeshGeometryCreateParams {
-    da: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    da: QPoint2dList;
     db: GLES.Texture;
   }
   export class LitMeshGeometry extends MeshGeometry {
@@ -162,7 +221,7 @@ export namespace GLES {}
   }
   export class TexturedLitMeshGeometryCreateParams extends MeshGeometryCreateParams {
     da: OctEncodedNormalList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    db: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    db: QPoint2dList;
     dc: GLES.Texture:
     dd: Material;
   }
@@ -179,7 +238,7 @@ export namespace GLES {}
     ck: ColorData;
   }
   export class PolylineGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ca: QPoint3dList;
     cc: ColorTable:
     cd: FeatureIndex;
     ce: LineCode;
@@ -199,7 +258,7 @@ export namespace GLES {}
     cj: ColorData;
   }
   export class EdgeGeometryCreateParams extends IndexedGeometryCreateParams {
-    ca: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ca: QPoint3dList;
     cc: ColorTable;
     cd: FeatureIndex;
     ce: LineCode;
@@ -213,7 +272,7 @@ export namespace GLES {}
   }
   export class SilhouetteEdgeGeometryCreateParams extends EdgeGeometryCreateParams {
     da: OctEncodedNormalPairList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    db: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    db: QPoint3dList;
     dd: ColorTable;
     de: FeatureIndex;
     df: LinePixels;
@@ -230,7 +289,7 @@ export namespace GLES {}
   export class PointStringGeometryCreateParams extends IndexedGeometryCreateParams {
     ca: ColorTable;
     cb: FeatureIndex;
-    cc: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    cc: QPoint3dList;
   }
   export class PointCloudGeometry extends CachedGeometry {
     ba: BufferHandle;
@@ -239,7 +298,7 @@ export namespace GLES {}
     be: RenderOrder;
   }
   export class PointCloudGeometryCreateParams extends CachedGeometryCreateParams {
-    bb: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    bb: QPoint3dList;
   }
   export class ViewportQuadGeometry extends IndexedGeometry {
     ca: TechniqueId;
@@ -320,7 +379,7 @@ export namespace GLES {}
     n: assert; // was BeAssert;
     p: ViewFlags;
     q: Primitive;
-    r: Render.Decorations; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    r: Decorations;
     u: RenderCommands;
     w: CompositeFlags;
   }
@@ -364,7 +423,7 @@ export namespace GLES {}
     b: DrawCommands;
     c: Primitive;
     d: GLESBatch;
-    e: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    e: IModelConnection; // was DgnDb
   }
   export class Uniform {
     a: FloatRgba;
@@ -372,16 +431,16 @@ export namespace GLES {}
     c: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     d: FeatureTable; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     e: FeatureSymbologyOverrides; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    f: DgnElementIdSet; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
-    g: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    f: Id64Set; // Was DgnElementIdSet
+    g: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
   }
   export class NonUniform {
     a: LUTParams;
     b: FeatureTable; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     c: GLESTexture;
     d: FeatureSymbologyOverrides; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    e: DgnElementIdSet; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
-    f: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    e: Id64Set; // Was DgnElementIdSet
+    f: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
   }
   export class FeatureOverrides {
     a: Uniform;
@@ -398,7 +457,7 @@ export namespace GLES {}
     b: assert; // was BeAssert;
     c: GLESTexture;
     d: FeatureTable; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    e: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    e: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
     f: LUTParams;
   }
   export class GLESBatch extends GLESGraphic {
@@ -415,7 +474,7 @@ export namespace GLES {}
     aa: GraphicBranch; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     ab: Transform;
     ac: ClipPlane;
-    ad: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    ad: IModelConnection; // was DgnDb
     ae: ClipVector;
     af: RenderCommands;
     ag: DrawCommands;
@@ -426,20 +485,20 @@ export namespace GLES {}
   }
   export class WorldDecorations extends GLESBranch {
     bc: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    bd: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    bd: IModelConnection; // was DgnDb
     be: ViewFlags;
     bf: DecorationList;
     bg: GLESBranch;
   }
   export class GLESList extends GLESGraphic {
     ab: Graphic;
-    ac: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    ac: IModelConnection; // was DgnDb
     ad: RenderCommands;
     ae: DrawCommands;
     af: GLESBatch;
   }
   export class PrimitiveParams {
-    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    a: QPoint3dList;
     b: QPoint3d;
   }
   export class Primitive extends GLESGraphic {
@@ -459,11 +518,11 @@ export namespace GLES {}
     ad: FeatureIndex;
   }
   export class IndexedPrimitive extends Primitive {
-    ca: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    ca: IModelConnection; // was DgnDb
   }
   export class TriMeshParams extends IndexedPrimitiveParams {
     ba: OctEncodedNormalList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    bb: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    bb: QPoint2dList;
     bc: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: Render.Material; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     be: TriMeshArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -480,7 +539,7 @@ export namespace GLES {}
     bb: Vertex;
     bc: IndexedPolylineArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: CachedGeometry;
-    be: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    be: QPoint3dList;
     bg: QPoint3d;
     bh: PolylineParamVertex;
     bi: FPoint3d; //GeomLibs/PublicAPI/Geom/FPoint3d.h
@@ -511,7 +570,7 @@ export namespace GLES {}
     eb: assert; // was BeAssert;
   }
   export class PointStringParams extends IndexedPrimitiveParams {
-    ba: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ba: QPoint2dList;
     bb: IndexedPolylineArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
   }
   export class PointStringPrimitive extends IndexedPrimitive {
@@ -525,7 +584,7 @@ export namespace GLES {}
     ba: PointCloudParams;
     bc: assert; // was BeAssert;
     be: PointCloudArgs; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    bf: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    bf: IModelConnection; // was DgnDb
   }
   // MATERIAL
   export class Material extends Render.Material {
@@ -556,7 +615,7 @@ export namespace GLES {}
     l: ByteStream; // ?
     m: RenderOrder;
     n: ViewRect; // ./ViewRect from GLESRender.h
-    o: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    o: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
     q: string; // was BeFileName;
     u: IPixelDataBuffer; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     v: BSIRect; // Geomlibs/PublicAPI/Geom/IntegerTypes/BSIRect.h
@@ -763,17 +822,17 @@ export namespace GLES {}
     }
   }
   // System
-  export class Light extends Render.Light {
-    a: Lighting; // // DgnPlatform/PublicAPI/DgnPlatform/Lighting.h
+  export class SystemLight extends Render.Light {
+    a: Lighting.Light;
     b: ColorDef;
     c: Vector3d;
     d: Point3d;
   }
   export class ViewportQuad {
-    a: QPoint3dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    a: QPoint3dList;
   }
   export class TexturedViewportQuad extends ViewportQuad {
-    a: QPoint2dList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    a: QPoint2dList;
   }
   export class BoundFrameBufferStackBinding {
     a: FrameBuffer;
@@ -805,7 +864,7 @@ export namespace GLES {}
     s: Vector3d;
     t: Point3d;
     v: Techniques;
-    w: DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnDb.h
+    w: IModelConnection; // was DgnDb
     x: ClipVector;
     y: Transform;
     aa: FeatureTable; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
@@ -844,16 +903,16 @@ export namespace GLES {}
     l: SceneCompositor;
     m: Point3d;
     n: BranchStack;
-    o: Frustum; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    o: Frustum;
     q: GLESBatch;
     r: BeTimePoint;
     s: FeatureOverrides;
     t: FeatureSymbologyOverrides; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     u: OvrGraphicParams; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    v: DgnElementIdSet; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    v: Id64Set; // Was DgnElementIdSet
     w: PickTable;
     x: FrustumUniforms;
-    y: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    y: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
     z: BranchState;
     aa: WorldDecorations;
     ab: EdgeOverrides;
@@ -886,7 +945,7 @@ export namespace GLES {}
     bf: Decorations;
     bg: DecorationList;
     bh: FeatureSymbologyOverrides; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
-    bi: DgnElementId; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
+    bi: IModelConnection; // was DgnDb; // DgnPlatform/PublicAPI/DgnPlatform/DgnPlatform.h
     bj: RenderState;
     bk: Render.Target; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
 
