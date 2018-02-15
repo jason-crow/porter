@@ -1036,11 +1036,11 @@ export namespace GLES {}
   }
   // Texture
   export class GLESTextureCreateParams {
-    a: GLESTextureFormat;
-    b: GLESTextureDataType;
+    a: GL.TextureFormat;
+    b: GL.TextureDataType;
     c: ByteStream; // ?
     d: Point2d;
-    e: GLESTextureInternalFormat;
+    e: GL.TextureInternalFormat;
     f: GL.WrapMode; // was WrapMode;
     g: TextureFlags;
     h: Render.Image; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
