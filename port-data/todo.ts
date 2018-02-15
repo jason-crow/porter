@@ -12,7 +12,7 @@ import { Id64, Id64Set } from "@bentley/bentleyjs-core/lib/Id";
 import { assert } from "chai";
 
 import { ColorDef } from "../../common/ColorDef";
-import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Hilite, GraphicBuilder, FillDisplay } from "../../common/Render";
+import { Decorations, DecorationList, GraphicList, ViewFlags, LinePixels, Hilite, GraphicBuilder, FillDisplay, GraphicParams } from "../../common/Render";
 import { Frustum } from "../../common/Frustum";
 import { Light } from "../../common/Lighting";
 
@@ -44,7 +44,15 @@ import { QPoint3d, QPoint2d, QPoint3dList, QPoint2dList, QParams3d } from "./QPo
 import { OctEncodedNormal, OctEncodedNormalList, OctEncodedNormalPair, OctEncodedNormalPairList } from "./OctEncodedNormal";
 
 // RENDER.H
-
+export enum OvrGraphicParamFlags {
+}
+export class OvrGraphicParams {
+  a: GraphicParams;
+  b: Render.Material;  // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+  c: ColorDef;
+  d: LinePixels;
+  e: Render.Texture;  // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+}
 export class Graphic {
   a: IModelConnection; // was DgnDb
 }
@@ -314,7 +322,7 @@ export namespace GLES {}
     dd: RenderOrder;
   }
   export class SilhouetteEdgeGeometryCreateParams extends EdgeGeometryCreateParams {
-    da: OctEncodedNormalPairList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    da: OctEncodedNormalPairList;
     db: QPoint3dList;
     dd: ColorTable;
     de: FeatureIndex;
