@@ -41,7 +41,7 @@ import { FrustumUniformType, FrustumUniforms, GLESClips } from "./Target";
 import { TextureFlags } from "./Texture";
 import { Matrix3, Matrix4 } from "./Matrix";
 import { QPoint3d, QPoint2d, QPoint3dList, QPoint2dList } from "./QPoint";
-import { OctEncodedNormal } from "./OctEncodedNormal";
+import { OctEncodedNormal, OctEncodedNormalList } from "./OctEncodedNormal";
 
 // RENDER.H
 
@@ -167,7 +167,7 @@ export namespace GLES {}
     dc: LitMeshData;
   }
   export class LitMeshGeometryCreateParams extends MeshGeometryCreateParams {
-    da: OctEncodedNormalList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    da: OctEncodedNormalList;
     db: Material;
     dc: ColorTable;
   }
@@ -185,7 +185,7 @@ export namespace GLES {}
     dg: TexturedMeshData;
   }
   export class TexturedLitMeshGeometryCreateParams extends MeshGeometryCreateParams {
-    da: OctEncodedNormalList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    da: OctEncodedNormalList;
     db: QPoint2dList;
     dc: GLES.Texture:
     dd: Material;
@@ -486,7 +486,7 @@ export namespace GLES {}
     ca: IModelConnection; // was DgnDb
   }
   export class TriMeshParams extends IndexedPrimitiveParams {
-    ba: OctEncodedNormalList; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
+    ba: OctEncodedNormalList;
     bb: QPoint2dList;
     bc: Render.Texture; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
     bd: Render.Material; // DgnPlatform/PublicAPI/DgnPlatform/Render.h
