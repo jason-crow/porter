@@ -17,6 +17,7 @@ import { Frustum } from "../../common/Frustum";
 import { Light } from "../../common/Lighting";
 
 import { IModelConnection } from "../IModelConnection";
+import { Viewport } from "../Viewport";
 
 import { BranchState, BranchStack } from "./BranchState";
 import { FeatureIndices } from "./CachedGeometry";
@@ -62,7 +63,7 @@ export class GraphicBuilderTileCorners {
 export class GraphicBuilderCreateParams {
   a: IModelConnection; // was DgnDb
   b: Transform;
-  c: DgnViewport; // DgnPlatform/PublicAPI/DgnPlatform/DgnViewport.h
+  c: Viewport; // was DgnViewport
 }
 export class ColorIndex {
 }
