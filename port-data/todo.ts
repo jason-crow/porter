@@ -23,7 +23,7 @@ import { BranchState, BranchStack } from "./BranchState";
 import { FeatureIndices } from "./CachedGeometry";
 import { LineCode, EdgeOverrides } from "./EdgeOverrides";
 import { LUTDimension, LUTParams, FeatureDimension, FeatureDimensions, FeatureDimensionsIterator } from "./FeatureDimensions";
-import { FeatureIndexType, FeatureIndex } from "./FeatureIndex";
+import { ColorIndex, FeatureIndexType, FeatureIndex } from "./FeatureIndex";
 import { FloatRgb, FloatRgba, FloatPreMulRgba } from "./FloatRGBA";
 import { GL } from "./GL";
 import { RenderPass, GeometryType, TextureUnit, RenderOrder, isPlanar, isSurface, CompositeFlags, SurfaceFlags, OvrFlags, IsTranslucent } from "./RenderFlags";
@@ -64,8 +64,6 @@ export class GraphicBuilderCreateParams {
   a: IModelConnection; // was DgnDb
   b: Transform;
   c: Viewport; // was DgnViewport
-}
-export class ColorIndex {
 }
 export enum FillFlags {
 }
